@@ -1,10 +1,12 @@
 /// <reference types="cypress" />
 
+const admin_front = Cypress.env('admin_front');
+const api = Cypress.env('api');  
     
 describe('Deveria testar a parte de modalidades do módulo admin da Academia Lanza', function() {
     
     beforeEach(function() {
-        cy.visit('http://localhost:3000');
+        cy.visit(admin);
 
         cy.get('.mt-16 > .font-bold').click(); 
         cy.primeiroLogin();
@@ -35,7 +37,7 @@ describe('Deveria testar a parte de modalidades do módulo admin da Academia Lan
         cy.get('@token').then(token => {
             cy.get('@id').then(id => {
                 cy.request({
-                    url: `http://localhost:5000/api/admin/administrador/${id}`,
+                    url: `${api}/api/admin/administrador/${id}`,
                     method: 'DELETE',
                     headers: { Authorization: `Bearer ${token}` },
                 }).its('status').should('be.equal', 204);

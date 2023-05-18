@@ -1,10 +1,12 @@
 /// <reference types="cypress" />
 
-    
+const admin_front = Cypress.env('admin');
+const api = Cypress.env('api');    
+
 describe('Deveria testar as funcionalidades de autorização do módulo admin da Academia Lanza', () => {
     
         beforeEach(() => {
-            cy.visit('http://localhost:3000');
+            cy.visit(admin_front);
     
         });
     
@@ -28,7 +30,7 @@ describe('Deveria testar as funcionalidades de autorização do módulo admin da
                     cy.get('.bem-vindo > .p-3').should('contain', 'BEM-VINDO');
 
                     cy.request({
-                        url: `http://localhost:5000/api/admin/administrador/${id}`,
+                        url: `${api}/api/admin/administrador/${id}`,
                         method: 'DELETE',
                         headers: { Authorization: `Bearer ${token}` },
                     }).its('status').should('be.equal', 204);
@@ -61,7 +63,7 @@ describe('Deveria testar as funcionalidades de autorização do módulo admin da
                     cy.registrar(this.admin, true);   
                     cy.get('.erroRegistrar').should('contain', 'Admin já existe');   
                     cy.request({
-                        url: `http://localhost:5000/api/admin/administrador/${id}`,
+                        url: `${api}/api/admin/administrador/${id}`,
                         method: 'DELETE',
                         headers: { Authorization: `Bearer ${token}` },
                     }).its('status').should('be.equal', 204);
@@ -94,7 +96,7 @@ describe('Deveria testar as funcionalidades de autorização do módulo admin da
                     cy.wait(1000);
 
                     cy.request({
-                        url: `http://localhost:5000/api/admin/administrador/${id}`,
+                        url: `${api}/api/admin/administrador/${id}`,
                         method: 'DELETE',
                         headers: { Authorization: `Bearer ${token}` },
                     }).its('status').should('be.equal', 204);
@@ -131,7 +133,7 @@ describe('Deveria testar as funcionalidades de autorização do módulo admin da
                     cy.get('.Toastify__toast-body > :nth-child(2)').should('contain', 'Credenciais de login erradas')
 
                     cy.request({
-                        url: `http://localhost:5000/api/admin/administrador/${id}`,
+                        url: `${api}/api/admin/administrador/${id}`,
                         method: 'DELETE',
                         headers: { Authorization: `Bearer ${token}` },
                     }).its('status').should('be.equal', 204);

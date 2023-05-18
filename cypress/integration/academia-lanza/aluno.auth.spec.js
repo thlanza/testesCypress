@@ -1,16 +1,19 @@
 /// <reference types="cypress" />
 import 'cypress-iframe';
 
+const aluno_front = Cypress.env('aluno_front');
+const api = Cypress.env('api');
+
 describe('Deveria testar o módulo Aluno do site Academia Lanza', () => {
 
     beforeEach(() => {
-        cy.visit('http://localhost:3001');
-        cy.request('POST', 'http://localhost:5000/api/modalidades/seed');
+        cy.visit(aluno_front);
+        cy.request('POST', `${api}/api/modalidades/seed`);
     });
     afterEach(() => {
-        cy.request('DELETE', 'http://localhost:5000/api/modalidades/deletarColecaoModalidades');
+        cy.request('DELETE', `${api}/api/modalidades/deletarColecaoModalidades`);
     });
-    it.skip('Deveria matricular', function() {
+    it('Deveria matricular', function() {
         cy.matricular();
     });
 
@@ -24,7 +27,7 @@ describe('Deveria testar o módulo Aluno do site Academia Lanza', () => {
         .type(this.aluno.email);
         cy.get('[type="password"]')  
             .type(this.aluno.senha);   
-        cy.intercept({ method: 'POST', url: 'http://localhost:5000/api/alunos/logar'}).as('logar');
+        cy.intercept({ method: 'POST', url: `${api}/api/alunos/logar`}).as('logar');
    
         cy.get('[type="submit"]').click(); 
 
@@ -33,13 +36,12 @@ describe('Deveria testar o módulo Aluno do site Academia Lanza', () => {
         cy.get('.deslogar').should('exist');
 
         cy.wait('@logar').then((interception) => {
-            console.log("logar body", interception.response.body);
             // id = interception.response.body.usuario._id;
             token = interception.response.body.token;
             cy.wait(3000);
     
             cy.request({
-                url: `http://localhost:5000/api/alunos/cancelarInscricao`,
+                url: `${api}/api/alunos/cancelarInscricao`,
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
             }).its('status').should('be.equal', 204);

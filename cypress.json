@@ -1,5 +1,4 @@
 {
-    "baseUrl": "http://localhost:5000/api",
     "viewportWidth": 1300,
     "viewportHeight": 700
 }

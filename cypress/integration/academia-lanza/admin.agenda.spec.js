@@ -1,10 +1,13 @@
 /// <reference types="cypress" />
 
-    
+
+const admin_front = Cypress.env('admin_front');
+const api = Cypress.env('api');
+
 describe('Deveria testar a parte de agenda do módulo admin da Academia Lanza', function() {
     
     beforeEach(function() {
-        cy.visit('http://localhost:3000');
+        cy.visit(admin_front);
 
         cy.get('.mt-16 > .font-bold').click(); 
         cy.primeiroLogin();
@@ -35,7 +38,7 @@ describe('Deveria testar a parte de agenda do módulo admin da Academia Lanza', 
         cy.get('@token').then(token => {
             cy.get('@id').then(id => {
                 cy.request({
-                    url: `http://localhost:5000/api/admin/administrador/${id}`,
+                    url: `${api}/api/admin/administrador/${id}`,
                     method: 'DELETE',
                     headers: { Authorization: `Bearer ${token}` },
                 }).its('status').should('be.equal', 204);
@@ -47,7 +50,7 @@ describe('Deveria testar a parte de agenda do módulo admin da Academia Lanza', 
         //Fazendo o seed das modalidades e alunos
     
         cy.request({
-            url: `http://localhost:5000/api/modalidades/seedModalidadesCalendario`,
+            url: `${api}/api/modalidades/seedModalidadesCalendario`,
             method: 'POST',
         }).its('status').should('be.equal', 201);
 
@@ -63,7 +66,7 @@ describe('Deveria testar a parte de agenda do módulo admin da Academia Lanza', 
 
         //deletar coleção de modalidades e alunos para que o teste seja repetível
         cy.request({
-            url: `http://localhost:5000/api/modalidades/deletarColecaoModalidades`,
+            url: `${api}/api/modalidades/deletarColecaoModalidades`,
             method: 'DELETE',
         }).its('status').should('be.equal', 204);
     });

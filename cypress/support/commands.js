@@ -1,37 +1,4 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-
-import loc from './locators';
-
-Cypress.Commands.add('clickAlert', (locator, message) => {
-    cy.get(locator).click();
-    cy.on('window:alert', msg => {
-        expect(msg).to.be.equal(message)
-    });
-});
+const api = Cypress.env('api');
 
 Cypress.Commands.add('registrar', (admin, requisicaoNula = false) => {
     cy.get('[placeholder="Coloque aqui seu primeiro nome"]')
@@ -45,7 +12,7 @@ Cypress.Commands.add('registrar', (admin, requisicaoNula = false) => {
     if(requisicaoNula !== true) { 
     cy.intercept({
             method: 'POST',
-            url: 'http://localhost:5000/api/admin/registrar',
+            url: `${api}/api/admin/registrar`,
         }).as('registrarRequest');
     }
 
@@ -68,7 +35,7 @@ Cypress.Commands.add('registrarAluno', (aluno) => {
         
     cy.intercept({
             method: 'POST',
-            url: 'http://localhost:5000/api/alunos/matricular',
+            url: `${api}/api/alunos/matricular`,
         }).as('matricularAlunoRequest');
         
     cy.get('#react-select-2-input').type(`${aluno.modalidade}{enter}`);
@@ -97,7 +64,7 @@ Cypress.Commands.add('matricular', function(nao_deletar = false) {
         cy.get('.deslogar').should('exist');
         if(!nao_deletar) {
         cy.request({
-            url: `http://localhost:5000/api/alunos/cancelarInscricao`,
+            url: `${api}/api/alunos/cancelarInscricao`,
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
         }).its('status').should('be.equal', 204);
@@ -116,51 +83,9 @@ Cypress.Commands.add('primeiroLogin', () => {
     cy.get('.text-center').should('contain', 'Preencha seus dados para registrar-se.');
 });
 
-Cypress.Commands.add('resetApp', () => {
-   cy.get(loc.MENU.SETTINGS).click();
-   cy.get(loc.MENU.RESET).click();
-});
 
-Cypress.Commands.add('getToken', (user, passwd) => {
-    cy.request({
-        method: 'POST',
-        url: '/signin',
-        body: {
-            email: user,
-            redirecionar: false,
-            senha: passwd
-        }
-    }).its('body.token').should('not.be.empty')
-    .then(token => {
-        Cypress.env('token', token);
-        return token
-    });
-});
 
-Cypress.Commands.add('resetRest', () => {
-    cy.getToken('thlanza@hotmail.com', 'lanza1').then(token => {
-        cy.request({
-            method: 'GET',
-            url: '/reset',
-            headers: { Authorization: `JWT ${token}`}
-        }).its('status').should('be.equal', 200)
-    })
-});
 
-Cypress.Commands.add('getContaByName', name => {
-    cy.getToken('thlanza@hotmail.com', 'lanza1').then(token => {
-        cy.request({
-            method: 'GET',
-            url: '/contas',
-            headers: { Authorization: `JWT ${token}`},
-            qs: {
-                nome: name
-            }
-        }).then(res => {
-            return res.body[0].id
-        })
-    });
-});
 
 Cypress.Commands.overwrite('request', (originalFn, ...options) => {
     if(options.length === 1) {
